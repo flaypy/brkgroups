@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupos de WhatsApp - Encontre e Participe!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        :root {
+            --whatsapp-green: #25D366;
+            --whatsapp-teal: #128C7E;
+        }
+        .header-bg { background-color: var(--whatsapp-teal); }
+        .btn-whatsapp { background-color: var(--whatsapp-green); }
+        .btn-whatsapp:hover { background-color: #1ebe57; }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header-bg text-white shadow-md">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <h1 class="text-3xl font-bold">GruposWhats</h1>
+        <nav>
+            <a href="admin.html" class="text-white hover:text-gray-200">Painel do Admin</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="container mx-auto px-4 py-8">
+    <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold text-gray-800">Encontre os Melhores Grupos</h2>
+        <p class="text-gray-600 mt-2">Navegue por categorias e entre nos grupos que mais te interessam.</p>
+    </div>
+
+    <!-- Lista de Grupos -->
+    <div id="lista-grupos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <!-- Os cards dos grupos serão inseridos aqui pelo JavaScript -->
+        <div class="text-center p-8">
+            <p class="text-gray-500">Carregando grupos...</p>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white mt-12">
+    <div class="container mx-auto px-4 py-6 text-center">
+        <p>&copy; 2025 GruposWhats. Todos os direitos reservados.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const listaGrupos = document.getElementById('lista-grupos');
+
+        async function carregarGrupos() {
+            try {
+                const response = await fetch('api/buscar_grupos.php');
+                const result = await response.json();
+
+                if (result.sucesso && result.dados.length > 0) {
+                    listaGrupos.innerHTML = ''; // Limpa o "carregando"
+                    result.dados.forEach(grupo => {
+                        const card = `
+                                <div class="bg-white rounded-lg shadow-md p-5 flex flex-col items-center text-center transition-all duration-300 card-hover">
+                                    <img src="${grupo.imagem_perfil}" alt="Ícone do grupo ${grupo.nome}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-gray-100">
+                                    <span class="inline-block bg-green-100 text-green-800 text-xs px-2 rounded-full uppercase font-semibold tracking-wide mb-2">${grupo.categoria_nome}</span>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2">${grupo.nome}</h3>
+                                    <a href="${grupo.link_convite}" target="_blank" class="w-full mt-auto btn-whatsapp text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">
+                                        Entrar no Grupo
+                                    </a>
+                                </div>
+                            `;
+                        listaGrupos.innerHTML += card;
+                    });
+                } else {
+                    listaGrupos.innerHTML = '<p class="col-span-full text-center text-gray-500">Nenhum grupo encontrado no momento.</p>';
+                }
+            } catch (error) {
+                console.error('Erro ao buscar grupos:', error);
+                listaGrupos.innerHTML = '<p class="col-span-full text-center text-red-500">Ocorreu um erro ao carregar os grupos. Tente novamente mais tarde.</p>';
+            }
+        }
+
+        carregarGrupos();
+    });
+</script>
+
+</body>
+</html>
