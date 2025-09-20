@@ -18,9 +18,12 @@ if (empty($data['nome']) || empty($data['link_convite']) || empty($data['categor
 }
 
 $nome = $data['nome'];
-$descricao = $data['descricao'] ?? ''; // Descrição é opcional
-$link_convite = $data['link_convite'];
-$imagem_perfil = $data['imagem_perfil'] ?? 'https://placehold.co/100x100/25D366/FFFFFF?text=' . strtoupper(substr($nome, 0, 1));
+$link_convite = $data['link_convite']; // <-- ESTA LINHA FOI ADICIONADA
+// Correção para compatibilidade com PHP < 7.0 (substituindo o operador ??)
+$descricao = isset($data['descricao']) ? $data['descricao'] : '';
+$imagem_perfil_text = strtoupper(substr($nome, 0, 1));
+$imagem_perfil_default = 'https://placehold.co/100x100/25D366/FFFFFF?text=' . $imagem_perfil_text;
+$imagem_perfil = isset($data['imagem_perfil']) && !empty($data['imagem_perfil']) ? $data['imagem_perfil'] : $imagem_perfil_default;
 $categoria_id = (int)$data['categoria_id'];
 
 $stmt_name = "add_group";
